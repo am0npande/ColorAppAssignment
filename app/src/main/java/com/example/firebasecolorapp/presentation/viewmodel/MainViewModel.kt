@@ -1,6 +1,7 @@
 package com.example.firebasecolorapp.presentation.viewmodel
 
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.firebasecolorapp.domain.datamodel.ColorModel
@@ -11,6 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -23,7 +25,6 @@ class MainViewModel @Inject constructor(
     private val databaseReference: DatabaseReference,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
-
 
 
     val enableButton = MutableStateFlow(true)
@@ -78,7 +79,6 @@ class MainViewModel @Inject constructor(
         enableButton.value = false
 
         viewModelScope.launch {
-            // Fetching all colors from Room
             val allColors = colorList.value.reversed()
 
             for (colorModel in allColors) {
@@ -86,12 +86,21 @@ class MainViewModel @Inject constructor(
                 if (_syncNumber.value <= 0) break
 
                 val key = databaseReference.child("colors").push().key // Generate a unique key
+
                 key?.let {
-                    databaseReference.child("colors").child(it).setValue(colorModel)
-                    _syncNumber.value--
-                    saveSyncNumber()
-                    delay(300)
+                    try {
+                        // Using await() to wait for the Firebase setValue operation to complete
+                        databaseReference.child("colors").child(it).setValue(colorModel).await()
+                        _syncNumber.value--
+                        saveSyncNumber()
+
+                    } catch (e: Exception) {
+                        Log.d("TAG", "uploadColorsToFirebase: ${e.message}")
+                        // Exit the loop if there's a failure to avoid further decrements
+                        return@launch
+                    }
                 }
+                delay(400)
             }
             enableButton.value = true
         }
