@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "763021673225",
+    "project_id": "fir-colorapp",
+    "storage_bucket": "fir-colorapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763021673225:android:2d53e4bb4e8cc035c4c9d8",
+        "android_client_info": {
+          "package_name": "com.example.firebasecolorapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTVVdbVmQcIYXE_FNCvkn4BuaxbtxWrvo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
